@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/reeeeeee-dev/stock-alerts/issues"
   },
-  "homepage": "https://github.com/reeeeeee-dev/stock-alerts#readme"
+  "homepage": "https://github.com/reeeeeee-dev/stock-alerts#readme",
+  "dependencies": {
+    "nightmare": "^3.0.2",
+    "xmtoolbox": "^1.2.24"
+  }
 }
