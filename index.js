@@ -2,8 +2,6 @@ const request = require('request');
 const Nightmare = require('nightmare');
 const secrets = require('./secrets');
 
-const nightmare = Nightmare({show: false});
-
 const url = "https://store.ui.com/collections/unifi-protect/products/g4-doorbell-pro";
 const waitTarget = "#bundleApp";
 
@@ -36,17 +34,17 @@ const sendPage = async () => {
     })
 }
 
-const checkPage = () => {
-    nightmare
+const checkPage = async () => {
+    const nightmare = new Nightmare({show: false});
+    await nightmare
         .goto(url)
         .wait(waitTarget)
         .evaluate(() => document.getElementById("addToCart"))
         .end()
-        .then(async data => {
+        .then(data => {
             if(data) {
                 console.log("CHANGE DETECTED!!!");
-                await sendPage();
-                process.exit(0);
+                sendPage().then(() => process.exit(0));
             } else {
                 console.log("No change at ", Date().toString());
             }
@@ -54,9 +52,8 @@ const checkPage = () => {
         .catch(err => {
             console.error(err);
         });
-    
+    nightmare.end();
 }
 
 console.log("Running...")
-
-setInterval(checkPage, 5000);
+setInterval(checkPage, 300000);
