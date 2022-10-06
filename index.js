@@ -56,4 +56,4 @@ const checkPage = async () => {
 }
 
 console.log("Running...")
-setInterval(checkPage, 300000);
+setInterval(checkPage, 120000);
