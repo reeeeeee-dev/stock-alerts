@@ -1,57 +1,55 @@
 const puppeteer = require("puppeteer");
+const pager = require("./pager");
 
-const url = "https://store.ui.com/collections/unifi-protect/products/g4-doorbell-pro";
-const waitTarget = "#bundleApp";
+// click #addToCart
+// wait .cartBanner is visible(display: !none)
+                                    // click #CartCost
+                                    // wait .cartModal has class .open
+                                    // click <span>Checkout</span>
+// navigate to https://store.ui.com/checkout
 
-const sendPage = async () => {
-    const pagerUrl = "https://enceledus.xmatters.com/api/integration/1/functions/f2a069d9-46f6-40c2-bfd9-fd4a3a852d15/triggers";
+// SPLIT
 
-    const headers = {
-        "Content-Type": "application/json"
-    }
+// IF url include ?step=contact_information
+// wait, then click #ct__radio-box
+// click #continue_button
 
-    const body = JSON.stringify({
-        priority: "MEDIUM"
+// IF url include ?step=shipping_method
+// click #continue_button
+
+// IF url include ?step=payment_method
+// wait, then click #continue_button
+
+const checkStock = async (page) => {
+    await page.reload();
+    await page.waitForSelector("#bundleApp");
+    const inStock = await page.evaluate(() => document.getElementById("addToCart"));
+    console.log(`Status at ${Date().toString()}: ${inStock}`);
+    return inStock;
+}
+
+
+const run = async () => {
+    const browser = await puppeteer.launch({
+        executablePath: '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome',
+        headless: false
     });
-    console.log(secrets);
-    const options = {
-        method: "POST",
-        url: pagerUrl,
-        headers,
-        body,
-        auth: {
-            user: secrets.user,
-            password: secrets.password
-        }
+    const page = await browser.newPage();
+
+    await page.setViewport({ width: 1366, height: 768});
+    await page.goto("https://store.ui.com/collections/unifi-network-switching/products/usw-flex-mini");
+    const loop = async () => {
+        await login(page);
+        checkStock(page).then(stock => {
+            if(stock) {
+                pager.sendPage();
+            } else {
+                setTimeout(loop, 500)
+            }
+        });
     }
 
-    request(options, (err, res) => {
-        if(err) console.error(err);
-        console.log(res.body);
-        return;
-    })
+    loop();
 }
 
-const checkPage = async () => {
-    const nightmare = new Nightmare({show: false});
-    await nightmare
-        .goto(url)
-        .wait(waitTarget)
-        .evaluate(() => document.getElementById("addToCart"))
-        .end()
-        .then(data => {
-            if(data) {
-                console.log("CHANGE DETECTED!!!");
-                sendPage().then(() => process.exit(0));
-            } else {
-                console.log("No change at ", Date().toString());
-            }
-        })
-        .catch(err => {
-            console.error(err);
-        });
-    nightmare.end();
-}
-
-console.log("Running...")
-setInterval(checkPage, 120000);
+run();
