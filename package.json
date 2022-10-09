@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/reeeeeee-dev/stock-alerts#readme",
   "dependencies": {
+    "fs": "^0.0.1-security",
     "nightmare": "^3.0.2",
+    "puppeteer": "^18.2.1",
     "xmtoolbox": "^1.2.24"
   }
 }

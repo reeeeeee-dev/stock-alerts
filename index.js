@@ -1,6 +1,4 @@
-const request = require('request');
-const Nightmare = require('nightmare');
-const secrets = require('./secrets');
+const puppeteer = require("puppeteer");
 
 const url = "https://store.ui.com/collections/unifi-protect/products/g4-doorbell-pro";
 const waitTarget = "#bundleApp";
