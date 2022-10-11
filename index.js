@@ -132,7 +132,7 @@ const run = async () => {
         await login(page);
         checkStock(page).then(stock => {
             if(stock) {
-                buyItem(page);
+                pager.sendPage();
             } else {
                 setTimeout(loop, 500)
             }
