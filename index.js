@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
+const cron = require('node-cron');
 const pager = require("./pager");
 const secrets = require("./secrets.json");
 
@@ -26,15 +27,17 @@ puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 // IF url include ?step=payment_method
 // wait, then click #continue_button
 
-const checkStock = async (page) => {
+let page;
+
+const checkStock = async () => {
     await page.reload();
     await page.waitForSelector("#bundleApp");
     const inStock = await page.evaluate(() => document.getElementById("addToCart"));
-    console.log(`Status at ${Date().toString()}: ${inStock && true}`);
+    console.log(`Status at ${Date().toString()}: ${inStock ? "true" : "false"}`);
     return inStock;
 }
 
-const buyItem = async (page) => {
+const buyItem = async () => {
     const time = new Date();
 
     // Product Page
@@ -110,7 +113,7 @@ const buyItem = async (page) => {
     console.log("Stopped somewhere...");
 }
 
-const login = async (page) => {
+const login = async () => {
     const loggedOut = await page.evaluate(() =>
         document.getElementById("headerLoginLink")
     )
@@ -124,30 +127,30 @@ const login = async (page) => {
     }
 }
 
-const run = async () => {
+let ready = false;
+(async () => {
     const browser = await puppeteer.launch({
         executablePath: '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome',
         headless: false
     });
-    const page = await browser.newPage();
-
+    page = await browser.newPage();
     await page.setViewport({ width: 1366, height: 768});
     await page.goto("https://store.ui.com/collections/unifi-protect/products/g4-doorbell-pro");
-    const loop = async () => {
-        const time = new Date();
-        checkStock(page).then(async stock => {
-            console.log(`Stock check Time: ${((new Date()) - time) / 1000}s`);
-            if(stock) {
-                await login(page);
-                pager.sendPage();
-                buyItem(page);
-            } else {
-                setTimeout(loop, 500)
-            }
-        });
-    }
+    ready = true;
+})();
 
-    loop();
+let running = false;
+const run = async () => {
+    running = true;
+    const time = new Date();
+    const stock = await checkStock();
+    console.log(`Stock check Time: ${((new Date()) - time) / 1000}s`);
+    if(stock) {
+        await login();
+        pager.sendPage();
+        buyItem();
+    }
+    running = false;
 }
 
-run();
+cron.schedule('*/2 0-30 6 * * *', () => ready && !running && run());
