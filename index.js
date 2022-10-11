@@ -89,13 +89,17 @@ const buyItem = async (page) => {
         || page.url().endsWith(shippingPage)
         || page.url().endsWith(paymentPage)
     );
+
+    if(page.url().endsWith("processing")) {
+        console.log(page.url());
         await page.waitForNavigation();
+    }
+
+    if(page.url().endsWith("thank_you")) {
+        console.log(page.url());
+        await new Promise(resolve => setTimeout(resolve, 30000));
         process.exit(0);
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 10000));
-    console.log("SUCCESSFULLY COMPLETED PURCHASE!!!")
-    process.exit(0);
 }
 
 const login = async (page) => {
