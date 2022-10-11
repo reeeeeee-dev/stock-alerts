@@ -19,6 +19,7 @@
   "dependencies": {
     "fs": "^0.0.1-security",
     "nightmare": "^3.0.2",
+    "node-cron": "^3.0.2",
     "puppeteer": "^18.2.1",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-adblocker": "^2.13.5",
