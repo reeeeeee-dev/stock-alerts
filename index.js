@@ -37,6 +37,7 @@ const checkStock = async (page) => {
 const buyItem = async (page) => {
     // Product Page
     await page.click("#addToCart");
+    await page.click("#addToCart");
     await page.waitForSelector(".cartBanner", { visible: true })
 
     // Checkout
