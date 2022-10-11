@@ -44,17 +44,31 @@ const buyItem = async (page) => {
     await page.goto("https://store.ui.com/checkout");
     await page.waitForSelector(".main__content");
 
+    const contactPage = "step=contact_information";
+    const shippingPage = "step=shipping_method";
+    const paymentPage = "step=payment_method";
+
+    do {
+        await page.waitForSelector("#continue_button:not([disabled])");
+        console.log(page.url());
+
+        // Handle contact page
+        if(page.url().endsWith(contactPage) || !page.url().includes("step")) {
+            // Click the "Residential" button
+            await page.click('#ct__radio-btn-residential');
     while(page.url().endsWith("step=contact_information")
         || page.url().endsWith("step=shipping_method")
         || page.url().endsWith("step=payment_method")
     ) {
         await page.waitForSelector("#continue_button");
 
-        if(page.url().endsWith("step=contact_information")) {
-            await page.click('[for="ct__radio-btn-residential"]');
         }
 
         await page.click("#continue_button");
+    } while(page.url().endsWith(contactPage)
+        || page.url().endsWith(shippingPage)
+        || page.url().endsWith(paymentPage)
+    );
         await page.waitForNavigation();
         process.exit(0);
     }
