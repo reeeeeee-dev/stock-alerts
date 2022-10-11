@@ -34,7 +34,7 @@ const checkStock = async (page) => {
     return inStock;
 }
 
-const buyItem = async (page, browser) => {
+const buyItem = async (page) => {
     const time = new Date();
 
     // Product Page
@@ -138,7 +138,7 @@ const run = async () => {
         checkStock(page).then(stock => {
             if(stock) {
                 pager.sendPage();
-                buyItem(page, browser);
+                buyItem(page);
             } else {
                 setTimeout(loop, 500)
             }
