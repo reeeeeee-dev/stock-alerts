@@ -51,8 +51,8 @@ const buyItem = async (page, browser) => {
     const paymentPage = "step=payment_method";
 
     do {
-        await page.waitForSelector("#continue_button:not([disabled])");
         console.log(page.url());
+        await page.waitForSelector("#continue_button:not([disabled])");
 
         // Handle contact page
         if(page.url().endsWith(contactPage) || !page.url().includes("step")) {
@@ -64,6 +64,8 @@ const buyItem = async (page, browser) => {
         if(page.url().endsWith(paymentPage)) {
             await page.waitForSelector("iframe");
             
+            console.log("Entering payment info...");
+
             // Insert card info within iFrames
             const ccNumberElement = await page.$('iframe[title="Field container for: Card number"]');
             const ccNumberFrame = await ccNumberElement.contentFrame();
@@ -90,6 +92,7 @@ const buyItem = async (page, browser) => {
     } while(page.url().endsWith(contactPage)
         || page.url().endsWith(shippingPage)
         || page.url().endsWith(paymentPage)
+        || !page.url().includes("step=")
     );
 
     if(page.url().endsWith("processing")) {
@@ -103,6 +106,8 @@ const buyItem = async (page, browser) => {
         await new Promise(resolve => setTimeout(resolve, 30000));
         process.exit(0);
     }
+
+    console.log("Stopped somewhere...");
 }
 
 const login = async (page) => {
