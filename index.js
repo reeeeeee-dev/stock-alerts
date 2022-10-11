@@ -34,7 +34,9 @@ const checkStock = async (page) => {
     return inStock;
 }
 
-const buyItem = async (page) => {
+const buyItem = async (page, browser) => {
+    const time = new Date();
+
     // Product Page
     await page.click("#addToCart");
     await page.click("#addToCart");
@@ -97,6 +99,7 @@ const buyItem = async (page) => {
 
     if(page.url().endsWith("thank_you")) {
         console.log(page.url());
+        console.log(`SUCCESSFULLY COMPLETED PURCHASE IN ${((new Date()) - time) / 1000}s`);
         await new Promise(resolve => setTimeout(resolve, 30000));
         process.exit(0);
     }
