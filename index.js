@@ -133,6 +133,7 @@ const run = async () => {
         checkStock(page).then(stock => {
             if(stock) {
                 pager.sendPage();
+                buyItem(page, browser);
             } else {
                 setTimeout(loop, 500)
             }
