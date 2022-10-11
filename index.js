@@ -132,7 +132,7 @@ const run = async () => {
     const page = await browser.newPage();
 
     await page.setViewport({ width: 1366, height: 768});
-    await page.goto("https://store.ui.com/collections/unifi-network-switching/products/usw-flex-mini");
+    await page.goto("https://store.ui.com/collections/unifi-protect/products/g4-doorbell-pro");
     const loop = async () => {
         await login(page);
         checkStock(page).then(stock => {
