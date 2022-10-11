@@ -56,12 +56,32 @@ const buyItem = async (page) => {
         if(page.url().endsWith(contactPage) || !page.url().includes("step")) {
             // Click the "Residential" button
             await page.click('#ct__radio-btn-residential');
-    while(page.url().endsWith("step=contact_information")
-        || page.url().endsWith("step=shipping_method")
-        || page.url().endsWith("step=payment_method")
-    ) {
-        await page.waitForSelector("#continue_button");
+        }
 
+        // Handle payment page
+        if(page.url().endsWith(paymentPage)) {
+            await page.waitForSelector("iframe");
+            
+            // Insert card info within iFrames
+            const ccNumberElement = await page.$('iframe[title="Field container for: Card number"]');
+            const ccNumberFrame = await ccNumberElement.contentFrame();
+            await ccNumberFrame.waitForSelector('input[placeholder="Card number"]');
+            await ccNumberFrame.type('input[placeholder="Card number"]', secrets.cc.number);
+            
+            const ccNameElement = await page.$('iframe[title="Field container for: Name on card"]');
+            const ccNameFrame = await ccNameElement.contentFrame();
+            await ccNameFrame.waitForSelector('input[placeholder="Name on card"]');
+            await ccNameFrame.type('[placeholder="Name on card"]', secrets.cc.name);
+
+            const ccExpElement = await page.$('iframe[title="Field container for: Expiration date (MM / YY)"]');
+            const ccExpFrame = await ccExpElement.contentFrame();
+            await ccExpFrame.waitForSelector('input[placeholder="Expiration date (MM / YY)"]');
+            await ccExpFrame.type('input[placeholder="Expiration date (MM / YY)"]', secrets.cc.exp);
+            
+            const ccCVCElement = await page.$('iframe[title="Field container for: Security code"]');
+            const ccCVCFrame = await ccCVCElement.contentFrame();
+            await ccCVCFrame.waitForSelector('input[placeholder="Security code');
+            await ccCVCFrame.type('input[placeholder="Security code"]', secrets.cc.cvc);
         }
 
         await page.click("#continue_button");
