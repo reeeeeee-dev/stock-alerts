@@ -11,7 +11,6 @@ const sendPage = async () => {
     const body = JSON.stringify({
         priority: "MEDIUM"
     });
-    console.log(secrets);
     const options = {
         method: "POST",
         url: pagerUrl,
