@@ -30,7 +30,7 @@ const checkStock = async (page) => {
     await page.reload();
     await page.waitForSelector("#bundleApp");
     const inStock = await page.evaluate(() => document.getElementById("addToCart"));
-    console.log(`Status at ${Date().toString()}: ${inStock}`);
+    console.log(`Status at ${Date().toString()}: ${inStock && true}`);
     return inStock;
 }
 
