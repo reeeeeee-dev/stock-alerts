@@ -135,16 +135,18 @@ const run = async () => {
     await page.goto("https://store.ui.com/collections/unifi-protect/products/g4-doorbell-pro");
     const loop = async () => {
         const time = new Date();
-        checkStock(page).then(async stock => {
-            console.log(`Stock check Time: ${((new Date()) - time) / 1000}s`);
-            if(stock) {
-                await login(page);
-                pager.sendPage();
-                buyItem(page);
-            } else {
-                setTimeout(loop, 500)
-            }
-        });
+        if(time.getHours() === 6 && time.getMinutes() <= 30) {
+            checkStock(page).then(async stock => {
+                console.log(`Stock check Time: ${((new Date()) - time) / 1000}s`);
+                if(stock) {
+                    await login(page);
+                    pager.sendPage();
+                    buyItem(page);
+                } else {
+                    setTimeout(loop, 2000);
+                }
+            });
+        }
     }
 
     loop();
