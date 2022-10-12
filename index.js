@@ -2,11 +2,20 @@ const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
 const cron = require('node-cron');
+const { PuppeteerScreenRecorder } = require('puppeteer-screen-recorder');
 const pager = require("./pager");
 const secrets = require("./secrets.json");
 
 puppeteer.use(StealthPlugin());
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
+
+const videoConfig = {
+    videoFrame: {
+        width: 1024,
+        height: 1536
+    },
+    aspectRatio: '1:2'
+}
 
 // click #addToCart
 // wait .cartBanner is visible(display: !none)
@@ -127,14 +136,23 @@ const login = async () => {
     }
 }
 
+// Setup
 let ready = false;
+let recorder;
 (async () => {
     const browser = await puppeteer.launch({
         executablePath: '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome',
         headless: false
     });
     page = await browser.newPage();
-    await page.setViewport({ width: 1366, height: 768});
+    await page.setViewport({
+        width: 1024,
+        height: 1536
+    });
+
+    recorder = new PuppeteerScreenRecorder(page, videoConfig);
+    await recorder.start(`./videos/${(new Date()).getTime()}.mp4`);
+
     await page.goto("https://store.ui.com/collections/unifi-protect/products/g4-doorbell-pro");
     ready = true;
 })();
@@ -143,12 +161,17 @@ let running = false;
 const run = async () => {
     running = true;
     const time = new Date();
-    const stock = await checkStock();
-    console.log(`Stock check Time: ${((new Date()) - time) / 1000}s`);
-    if(stock) {
-        await login();
-        pager.sendPage();
-        buyItem();
+    try {
+        const stock = await checkStock();
+        console.log(`Stock check Time: ${((new Date()) - time) / 1000}s`);
+        if(stock) {
+            await login();
+            pager.sendPage();
+            buyItem();
+        }
+    } catch(e) {
+        recorder.stop();
+        console.log("An error has occurred: ", e);
     }
     running = false;
 }
