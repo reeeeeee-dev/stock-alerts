@@ -51,7 +51,6 @@ const buyItem = async () => {
 
     // Product Page
     await page.click("#addToCart");
-    await page.click("#addToCart");
     await page.waitForSelector(".cartBanner", { visible: true })
 
     // Checkout
