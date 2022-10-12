@@ -150,7 +150,6 @@ let recorder;
     });
 
     recorder = new PuppeteerScreenRecorder(page, videoConfig);
-    await recorder.start(`./videos/${(new Date()).getTime()}.mp4`);
 
     await page.goto("https://store.ui.com/collections/unifi-protect/products/g4-doorbell-pro");
     ready = true;
@@ -164,6 +163,7 @@ const run = async () => {
         const stock = await checkStock();
         console.log(`Stock check Time: ${((new Date()) - time) / 1000}s`);
         if(stock) {
+            await recorder.start(`./videos/${(new Date()).getTime()}.mp4`);
             await login();
             pager.sendPage();
             buyItem();
