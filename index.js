@@ -166,7 +166,7 @@ const run = async () => {
             await recorder.start(`./videos/${(new Date()).getTime()}.mp4`);
             await login();
             pager.sendPage();
-            buyItem();
+            await buyItem();
         }
     } catch(e) {
         recorder.stop();
